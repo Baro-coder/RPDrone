@@ -35,18 +35,18 @@ class MPUSensor:
     
     def run(self):
         while True:
-            sys.stdout.write("gyro data")
-            sys.stdout.write("---------")
+            sys.stdout.write("gyro data\n")
+            sys.stdout.write("---------\n")
             gyro_xout = self._read_word_2c(MPUSensor.GYRO_XOUT_ADDR)
             gyro_yout = self._read_word_2c(MPUSensor.GYRO_YOUT_ADDR)
             gyro_zout = self._read_word_2c(MPUSensor.GYRO_ZOUT_ADDR)
-            sys.stdout.write(f"gyro_xout: {gyro_xout} | scaled: {(gyro_xout / 131)}")
-            sys.stdout.write(f"gyro_yout: {gyro_yout} | scaled: {(gyro_yout / 131)}")
-            sys.stdout.write(f"gyro_zout: {gyro_zout} | scaled: {(gyro_zout / 131)}")
+            sys.stdout.write(f"gyro_xout: {gyro_xout} | scaled: {(gyro_xout / 131)}\n")
+            sys.stdout.write(f"gyro_yout: {gyro_yout} | scaled: {(gyro_yout / 131)}\n")
+            sys.stdout.write(f"gyro_zout: {gyro_zout} | scaled: {(gyro_zout / 131)}\n")
             
             
-            sys.stdout.write("accelerometer data")
-            sys.stdout.write("------------------")
+            sys.stdout.write("accelerometer data\n")
+            sys.stdout.write("------------------\n")
             accel_xout = self._read_word_2c(MPUSensor.ACCEL_XOUT_ADDR)
             accel_yout = self._read_word_2c(MPUSensor.ACCEL_YOUT_ADDR)
             accel_zout = self._read_word_2c(MPUSensor.ACCEL_ZOUT_ADDR)
@@ -54,16 +54,16 @@ class MPUSensor:
             accel_yout_scaled = accel_yout / 16383.0
             accel_zout_scaled = accel_zout / 16383.0
             
-            sys.stdout.write(f"accel_yout: {accel_xout} | scaled: {accel_xout_scaled}")
-            sys.stdout.write(f"accel_yout: {accel_yout} | scaled: {accel_yout_scaled}")
-            sys.stdout.write(f"accel_yout: {accel_zout} | scaled: {accel_zout_scaled}")
+            sys.stdout.write(f"accel_yout: {accel_xout} | scaled: {accel_xout_scaled}\n")
+            sys.stdout.write(f"accel_yout: {accel_yout} | scaled: {accel_yout_scaled}\n")
+            sys.stdout.write(f"accel_yout: {accel_zout} | scaled: {accel_zout_scaled}\n")
                
-            sys.stdout.write("rotation data")
-            sys.stdout.write("------------------")
+            sys.stdout.write("rotation data\n")
+            sys.stdout.write("------------------\n")
             x = self._get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            sys.stdout.write(f"x_rotation: {x}")
+            sys.stdout.write(f"x_rotation: {x}\n")
             y = self._get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            sys.stdout.write(f"y_rotation: {y}")
+            sys.stdout.write(f"y_rotation: {y}\n")
             
             time.sleep(1 / self.refresh_freq)
             
@@ -109,9 +109,9 @@ class MPUSensor:
 
 
     def _get_y_rotation(self, x, y, z):
-        radians = math.atan2(x, self.dist(y,z))
+        radians = math.atan2(x, self._dist(y,z))
         return -math.degrees(radians)
 
     def _get_x_rotation(self, x, y, z):
-        radians = math.atan2(y, self.dist(x,z))
+        radians = math.atan2(y, self._dist(x,z))
         return math.degrees(radians)
