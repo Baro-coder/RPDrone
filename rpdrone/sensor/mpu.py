@@ -9,15 +9,18 @@ class MPUSensor:
     POWER_MGMT_1 = 0x6b
     
     # Gyroscope registers
-    GYRO_XOUT_ADDR = 0x43
-    GYRO_YOUT_ADDR = 0x45
-    GYRO_ZOUT_ADDR = 0x47
+    GYRO_XOUT_ADDR = 0x3b
+    GYRO_YOUT_ADDR = 0x3d
+    GYRO_ZOUT_ADDR = 0x3f
     
     # Accelerometer registers
-    ACCEL_XOUT_ADDR = 0x3b
-    ACCEL_YOUT_ADDR = 0x3d
-    ACCEL_ZOUT_ADDR = 0x3f
+    ACCEL_XOUT_ADDR = 0x43
+    ACCEL_YOUT_ADDR = 0x45
+    ACCEL_ZOUT_ADDR = 0x47
     
+    # Scale Dividers
+    GYRO_DIVIDER = 16383.0
+    ACCEL_DIVIDER = 131
     
     def __init__(self, smbus_line : int, i2c_addr : int, refresh_freq : int) -> None:
         # Refresh frequency `Hz`
@@ -35,37 +38,42 @@ class MPUSensor:
     
     def run(self):
         while True:
-            sys.stdout.write("gyro data\n")
-            sys.stdout.write("---------\n")
+            sys.stdout.write("  Gyroscope\n")
+            sys.stdout.write("-------------\n")
             gyro_xout = self._read_word_2c(MPUSensor.GYRO_XOUT_ADDR)
             gyro_yout = self._read_word_2c(MPUSensor.GYRO_YOUT_ADDR)
             gyro_zout = self._read_word_2c(MPUSensor.GYRO_ZOUT_ADDR)
-            sys.stdout.write(f"gyro_xout: {gyro_xout} | scaled: {(gyro_xout / 131)}\n")
-            sys.stdout.write(f"gyro_yout: {gyro_yout} | scaled: {(gyro_yout / 131)}\n")
-            sys.stdout.write(f"gyro_zout: {gyro_zout} | scaled: {(gyro_zout / 131)}\n")
+            gyro_xout_scaled = gyro_xout / MPUSensor.GYRO_DIVIDER
+            gyro_yout_scaled = gyro_yout / MPUSensor.GYRO_DIVIDER
+            gyro_zout_scaled = gyro_zout / MPUSensor.GYRO_DIVIDER
+            sys.stdout.write(f"X: {gyro_xout} | Scaled: {gyro_xout_scaled}\n")
+            sys.stdout.write(f"Y: {gyro_yout} | Scaled: {gyro_yout_scaled}\n")
+            sys.stdout.write(f"Z: {gyro_zout} | Scaled: {gyro_zout_scaled}\n")
             
             
-            sys.stdout.write("accelerometer data\n")
-            sys.stdout.write("------------------\n")
+            sys.stdout.write("  Accelerometer\n")
+            sys.stdout.write("-----------------\n")
             accel_xout = self._read_word_2c(MPUSensor.ACCEL_XOUT_ADDR)
             accel_yout = self._read_word_2c(MPUSensor.ACCEL_YOUT_ADDR)
             accel_zout = self._read_word_2c(MPUSensor.ACCEL_ZOUT_ADDR)
-            accel_xout_scaled = accel_xout / 16383.0
-            accel_yout_scaled = accel_yout / 16383.0
-            accel_zout_scaled = accel_zout / 16383.0
+            accel_xout_scaled = accel_xout / MPUSensor.ACCEL_DIVIDER
+            accel_yout_scaled = accel_yout / MPUSensor.ACCEL_DIVIDER
+            accel_zout_scaled = accel_zout / MPUSensor.ACCEL_DIVIDER
+            sys.stdout.write(f"X: {accel_xout} | Scaled: {accel_xout_scaled}\n")
+            sys.stdout.write(f"Y: {accel_yout} | Scaled: {accel_yout_scaled}\n")
+            sys.stdout.write(f"Z: {accel_zout} | Scaled: {accel_zout_scaled}\n")
             
-            sys.stdout.write(f"accel_yout: {accel_xout} | scaled: {accel_xout_scaled}\n")
-            sys.stdout.write(f"accel_yout: {accel_yout} | scaled: {accel_yout_scaled}\n")
-            sys.stdout.write(f"accel_yout: {accel_zout} | scaled: {accel_zout_scaled}\n")
-               
-            sys.stdout.write("rotation data\n")
-            sys.stdout.write("------------------\n")
-            x = self._get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            sys.stdout.write(f"x_rotation: {x}\n")
-            y = self._get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            sys.stdout.write(f"y_rotation: {y}\n")
+            
+            sys.stdout.write("  Rotation\n")
+            sys.stdout.write("------------\n")
+            rot_x = self._get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
+            rot_y = self._get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
+            sys.stdout.write(f"x_rotation: {rot_x}\n")
+            sys.stdout.write(f"y_rotation: {rot_y}\n")
+            
             
             time.sleep(1 / self.refresh_freq)
+            
             
             sys.stdout.write('\033[A')
             sys.stdout.write('\033[A')
