@@ -40,9 +40,9 @@ class MPUSensor:
             gyro_xout = self._read_word_2c(MPUSensor.GYRO_XOUT_ADDR)
             gyro_yout = self._read_word_2c(MPUSensor.GYRO_YOUT_ADDR)
             gyro_zout = self._read_word_2c(MPUSensor.GYRO_ZOUT_ADDR)
-            sys.stdout.write("gyro_xout: ", gyro_xout, " scaled: ", (gyro_xout / 131))
-            sys.stdout.write("gyro_yout: ", gyro_yout, " scaled: ", (gyro_yout / 131))
-            sys.stdout.write("gyro_zout: ", gyro_zout, " scaled: ", (gyro_zout / 131))
+            sys.stdout.write(f"gyro_xout: {gyro_xout} | scaled: {(gyro_xout / 131)}")
+            sys.stdout.write(f"gyro_yout: {gyro_yout} | scaled: {(gyro_yout / 131)}")
+            sys.stdout.write(f"gyro_zout: {gyro_zout} | scaled: {(gyro_zout / 131)}")
             
             
             sys.stdout.write("accelerometer data")
@@ -54,21 +54,19 @@ class MPUSensor:
             accel_yout_scaled = accel_yout / 16383.0
             accel_zout_scaled = accel_zout / 16383.0
             
-            sys.stdout.write("accel_xout : ", accel_xout, " scaled: ", accel_xout_scaled)
-            sys.stdout.write("accel_yout : ", accel_yout, " scaled: ", accel_yout_scaled)
-            sys.stdout.write("accel_zout : ", accel_zout, " scaled: ", accel_zout_scaled)
+            sys.stdout.write(f"accel_yout: {accel_xout} | scaled: {accel_xout_scaled}")
+            sys.stdout.write(f"accel_yout: {accel_yout} | scaled: {accel_yout_scaled}")
+            sys.stdout.write(f"accel_yout: {accel_zout} | scaled: {accel_zout_scaled}")
                
             sys.stdout.write("rotation data")
             sys.stdout.write("------------------")
             x = self._get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            sys.stdout.write("x_rotation: ", x)
+            sys.stdout.write(f"x_rotation: {x}")
             y = self._get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            sys.stdout.write("y_rotation: ", y)
-            sys.stdout.write("***************************")
+            sys.stdout.write(f"y_rotation: {y}")
             
             time.sleep(1 / self.refresh_freq)
             
-            sys.stdout.write('\033[A')
             sys.stdout.write('\033[A')
             sys.stdout.write('\033[A')
             sys.stdout.write('\033[A')
@@ -100,7 +98,7 @@ class MPUSensor:
 
     # Binary to decimal val
     def _read_word_2c(self, adr):
-        val = self.read_word(adr)
+        val = self._read_word(adr)
         if(val >= 0x8000): #
             return -((65535 - val) + 1)
         else:
