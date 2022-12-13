@@ -66,8 +66,8 @@ class MPUSensor:
             
             sys.stdout.write("  Rotation\n")
             sys.stdout.write("------------\n")
-            rot_x = self._get_x_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
-            rot_y = self._get_y_rotation(accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
+            rot_x = self._get_x_rotation(gyro_xout_scaled, gyro_yout_scaled, gyro_zout_scaled)
+            rot_y = self._get_y_rotation(gyro_xout_scaled, gyro_yout_scaled, gyro_zout_scaled)
             sys.stdout.write(f"x_rotation: {rot_x}\n")
             sys.stdout.write(f"y_rotation: {rot_y}\n")
             
