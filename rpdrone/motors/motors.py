@@ -11,54 +11,50 @@ class MotorsController:
         self.BR = br_pin
         self.BL = bl_pin
         
-        self.FR_SPEED = 0
-        self.FL_SPEED = 0
-        self.BR_SPEED = 0
-        self.BL_SPEED = 0
+        self.acceleration = 10
         
-        self.acceleration = 1
+        self.steady_speed = 1100
+        self.min_speed = 1000
+        self.max_speed = 2000
         
-        self.steady_speed = 0
-        self.min_speed = 0
-        self.max_speed = 0
+        self.FR_SPEED = self.steady_speed
+        self.FL_SPEED = self.steady_speed
+        self.BR_SPEED = self.steady_speed
+        self.BL_SPEED = self.steady_speed
         
-        self.frequency = 50
-    
-    
-    def _update_freq(self):
-        self.PWM.set_PWM_frequency(self.FR, self.frequency)
-        self.PWM.set_PWM_frequency(self.FL, self.frequency)
-        self.PWM.set_PWM_frequency(self.BR, self.frequency)
-        self.PWM.set_PWM_frequency(self.BL, self.frequency)
     
     def _update_speed(self):
-        self.PWM.set_PWM_dutycycle(self.FR, self.FR_SPEED)
-        self.PWM.set_PWM_dutycycle(self.FL, self.FL_SPEED)
-        self.PWM.set_PWM_dutycycle(self.BR, self.BR_SPEED)
-        self.PWM.set_PWM_dutycycle(self.BL, self.BL_SPEED)
-        
+        self.PWM.set_servo_pulsewidth(self.FR, self.FR_SPEED)
+        self.PWM.set_servo_pulsewidth(self.FL, self.FL_SPEED)
+        self.PWM.set_servo_pulsewidth(self.BR, self.BR_SPEED)
+        self.PWM.set_servo_pulsewidth(self.BL, self.BL_SPEED)
         
     def arm_esc(self):
-        print ("Connect the battery and press Enter")
+        print ("Disconnect the battery and press Enter")
         inp = input()  
           
-        self.PWM.set_PWM_dutycycle(self.FR, 0)
-        self.PWM.set_PWM_dutycycle(self.FL, 0)
-        self.PWM.set_PWM_dutycycle(self.BR, 0)
-        self.PWM.set_PWM_dutycycle(self.BL, 0)
+        self.PWM.set_servo_pulsewidth(self.FR, 0)
+        self.PWM.set_servo_pulsewidth(self.FL, 0)
+        self.PWM.set_servo_pulsewidth(self.BR, 0)
+        self.PWM.set_servo_pulsewidth(self.BL, 0)
         time.sleep(1)
         
-        self.PWM.set_PWM_dutycycle(self.FR, 95)
-        self.PWM.set_PWM_dutycycle(self.FL, 95)
-        self.PWM.set_PWM_dutycycle(self.BR, 95)
-        self.PWM.set_PWM_dutycycle(self.BL, 95)
-        time.sleep(1)
+        print ("Disconnect the battery and press Enter")
+        inp = input() 
         
-        self.PWM.set_PWM_dutycycle(self.FR, 5)
-        self.PWM.set_PWM_dutycycle(self.FL, 5)
-        self.PWM.set_PWM_dutycycle(self.BR, 5)
-        self.PWM.set_PWM_dutycycle(self.BL, 5)
-        time.sleep(1)
+        self.PWM.set_servo_pulsewidth(self.FR, self.max_speed)
+        self.PWM.set_servo_pulsewidth(self.FL, self.max_speed)
+        self.PWM.set_servo_pulsewidth(self.BR, self.max_speed)
+        self.PWM.set_servo_pulsewidth(self.BL, self.max_speed)
+        time.sleep(2)
+        
+        self.PWM.set_servo_pulsewidth(self.FR, self.min_speed)
+        self.PWM.set_servo_pulsewidth(self.FL, self.min_speed)
+        self.PWM.set_servo_pulsewidth(self.BR, self.min_speed)
+        self.PWM.set_servo_pulsewidth(self.BL, self.min_speed)
+        time.sleep(2)
+        
+        print('ESCs are ready!')
         
     
     def steady(self):
@@ -114,7 +110,3 @@ class MotorsController:
         
     def set_max_motors_speed(self, max_speed : float):
         self.max_spped = max_speed
-        
-    def set_frequency(self, freq : int):
-        self.frequency = freq
-        self._update_freq()
