@@ -36,28 +36,30 @@ class MotorsController:
         self.PWM.set_PWM_dutycycle(self.FL, self.FL_SPEED)
         self.PWM.set_PWM_dutycycle(self.BR, self.BR_SPEED)
         self.PWM.set_PWM_dutycycle(self.BL, self.BL_SPEED)
-    
-    
+        
+        
     def arm_esc(self):
-        print('\tDisconnect battery and press ENTER')
-        inp = input('\t > ')
-
-        self.pi.set_servo_pulsewidth(self.FR, 0)
-        self.pi.set_servo_pulsewidth(self.FL, 0)
-        self.pi.set_servo_pulsewidth(self.BR, 0)
-        self.pi.set_servo_pulsewidth(self.BL, 0)
+        print ("Connect the battery and press Enter")
+        inp = input()  
+          
+        self.PWM.set_PWM_dutycycle(self.FR, 0)
+        self.PWM.set_PWM_dutycycle(self.FL, 0)
+        self.PWM.set_PWM_dutycycle(self.BR, 0)
+        self.PWM.set_PWM_dutycycle(self.BL, 0)
+        time.sleep(1)
         
-        print('\tConnect battery and press ENTER')
-        inp = input('\t > ')
-
-        self.pi.set_servo_pulsewidth(self.FR, 1000)
-        self.pi.set_servo_pulsewidth(self.FL, 1000)
-        self.pi.set_servo_pulsewidth(self.BR, 1000)
-        self.pi.set_servo_pulsewidth(self.BL, 1000)
-
-        time.sleep(2)
+        self.PWM.set_PWM_dutycycle(self.FR, 95)
+        self.PWM.set_PWM_dutycycle(self.FL, 95)
+        self.PWM.set_PWM_dutycycle(self.BR, 95)
+        self.PWM.set_PWM_dutycycle(self.BL, 95)
+        time.sleep(1)
         
-        print('ESCs are ready!')
+        self.PWM.set_PWM_dutycycle(self.FR, 5)
+        self.PWM.set_PWM_dutycycle(self.FL, 5)
+        self.PWM.set_PWM_dutycycle(self.BR, 5)
+        self.PWM.set_PWM_dutycycle(self.BL, 5)
+        time.sleep(1)
+        
     
     def steady(self):
         self.FR_SPEED = self.steady_speed
