@@ -23,10 +23,7 @@ class MPUSensor:
     GYRO_DIVIDER = 16383.0
     ACCEL_DIVIDER = 131
     
-    def __init__(self, smbus_line : int, i2c_addr : int, refresh_freq : int) -> None:
-        # Refresh frequency `Hz`
-        self.refresh_freq = refresh_freq
-        
+    def __init__(self, smbus_line : int, i2c_addr : int) -> None:
         # I2C device address
         self.i2c_addr = i2c_addr
         

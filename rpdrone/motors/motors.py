@@ -18,6 +18,7 @@ class MotorsController:
         
         self.acceleration = 1
         
+        self.steady_speed = 0
         self.min_speed = 0
         self.max_speed = 0
         
@@ -64,6 +65,11 @@ class MotorsController:
         
         print('ESCs are ready!')
     
+    def steady(self):
+        self.FR_SPEED = self.steady_speed
+        self.FL_SPEED = self.steady_speed
+        self.BR_SPEED = self.steady_speed
+        self.BL_SPEED = self.steady_speed
     
     def stop(self):
         self.FR_SPEED = 0
@@ -103,6 +109,9 @@ class MotorsController:
         self.BL_SPEED = min(self.BL_SPEED + self.acceleration, self.max_speed)
         self._update_speed()
         
+
+    def set_steady_speed(self, steady_speed : float):
+        self.steady_speed = steady_speed
 
     def set_min_motors_speed(self, min_speed : float):
         self.min_speed = min_speed

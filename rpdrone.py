@@ -12,12 +12,38 @@ def autohover():
         while True:
             x, y = mpu_sensor.get_rot_data()
             print(f'X: {round(x, 5)} | Y: {round(y, 5)}', end='\r')
+
+            x_steady, y_steady = False, False
+            if x < 0:
+                # right -> need to rotate left
+                motors_controller.rotate_left()
+                
+            elif x > 0:
+                # left -> need to rotate right
+                motors_controller.rotate_right()
+
+            else:
+                x_steady = True
+                
+            if y < 0:
+                # front -> need to rotate backward
+                motors_controller.rotate_backward()
             
-            time.sleep(REFRESH_RATE)
+            elif y > 0:
+                # back -> need to rotate forward
+                motors_controller.rotate_forward()
+                
+            else:
+                y_steady = True
+                
+            if x_steady and y_steady:
+                motors_controller.steady()
+
+            time.sleep(1 / REFRESH_RATE)
         
     except KeyboardInterrupt:
         print('-- STOP --')
-        # motors_controller.stop()
+        motors_controller.stop()
     
 
 def main():
@@ -25,13 +51,14 @@ def main():
     
     print('-- INIT --')
     
-    mpu_sensor = MPUSensor(smbus_line=1, i2c_addr=0x68, refresh_freq=100, blackbox_data_size=100000, record_black_box=True)
+    mpu_sensor = MPUSensor(smbus_line=1, i2c_addr=0x68)
     motors_controller = MotorsController(fr_pin=16, fl_pin=12, br_pin=21, bl_pin=20)
     
-    # motors_controller.set_max_motors_speed(35)
-    # motors_controller.set_min_motors_speed(10)
+    motors_controller.set_max_motors_speed(35)
+    motors_controller.set_min_motors_speed(10)
+    motors_controller.set_steady_speed(15)
     
-    # motors_controller.arm_esc()
+    motors_controller.arm_esc()
     
     autohover()
 
