@@ -64,7 +64,7 @@ def main():
     print('-- INIT --')
     
     mpu_sensor = MPUSensor(smbus_line=1, i2c_addr=0x68)
-    motors_controller = MotorsController(fr_pin=16, fl_pin=12, br_pin=21, bl_pin=20)
+    motors_controller = MotorsController(fr_pin=20, fl_pin=16, br_pin=21, bl_pin=12)
     
     motors_controller.set_max_motors_speed(1200)
     motors_controller.set_min_motors_speed(1100)
