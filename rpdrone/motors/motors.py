@@ -37,16 +37,9 @@ class MotorsController:
         self.PWM.set_servo_pulsewidth(self.FL, 0)
         self.PWM.set_servo_pulsewidth(self.BR, 0)
         self.PWM.set_servo_pulsewidth(self.BL, 0)
-        time.sleep(1)
         
-        print ("Disconnect the battery and press Enter")
+        print ("Connect the battery and press Enter")
         inp = input() 
-        
-        self.PWM.set_servo_pulsewidth(self.FR, self.max_speed)
-        self.PWM.set_servo_pulsewidth(self.FL, self.max_speed)
-        self.PWM.set_servo_pulsewidth(self.BR, self.max_speed)
-        self.PWM.set_servo_pulsewidth(self.BL, self.max_speed)
-        time.sleep(2)
         
         self.PWM.set_servo_pulsewidth(self.FR, self.min_speed)
         self.PWM.set_servo_pulsewidth(self.FL, self.min_speed)
