@@ -74,6 +74,7 @@ def main():
     motors_controller.arm_esc()
     
     print('Checking engines...')
+    motors_controller.check_engines()
     print('Done\n')
     
     print('Press ENTER to start')
