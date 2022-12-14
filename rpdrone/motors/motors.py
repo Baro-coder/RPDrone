@@ -15,7 +15,7 @@ class MotorsController:
         
         self.steady_speed = 1100
         self.min_speed = 1050
-        self.max_speed = 1400
+        self.max_speed = 1200
         
         self.FR_SPEED = self.steady_speed
         self.FL_SPEED = self.steady_speed
@@ -48,7 +48,31 @@ class MotorsController:
         time.sleep(2)
         
         print('ESCs are ready!')
+    
+    def check_engines(self):
+        print('FR', end=': ')
+        self.FR_SPEED = self.steady_speed
+        self.PWM.set_servo_pulsewidth(self.FR, self.FR_SPEED)
+        time.sleep(1.5)
+        print('OK')
         
+        print('FL', end=': ')
+        self.FL_SPEED = self.steady_speed
+        self.PWM.set_servo_pulsewidth(self.FL, self.FR_SPEED)
+        time.sleep(1.5)
+        print('OK')
+        
+        print('BR', end=': ')
+        self.BR_SPEED = self.steady_speed
+        self.PWM.set_servo_pulsewidth(self.BR, self.FR_SPEED)
+        time.sleep(1.5)
+        print('OK')
+        
+        print('BL', end=': ')
+        self.BL_SPEED = self.steady_speed
+        self.PWM.set_servo_pulsewidth(self.BL, self.FR_SPEED)
+        time.sleep(1.5)
+        print('OK')
     
     def steady(self):
         if self.FR_SPEED > self.steady_speed:
