@@ -69,18 +69,23 @@ def main():
     motors_controller.set_max_motors_speed(1200)
     motors_controller.set_min_motors_speed(1100)
     motors_controller.set_steady_speed(1120)
-    motors_controller.set_acceleration(1)
+    motors_controller.set_acceleration(0.5)
     
     motors_controller.arm_esc()
     
-    print('Checking engines...')
-    motors_controller.check_engines()
-    print('Done\n')
+    try:
+        print('Checking engines...')
+        motors_controller.check_engines()
+        print('Done\n')
     
-    print('Press ENTER to start')
-    inp = input()
+        print('Press ENTER to start')
+        inp = input()
     
-    motors_controller.steady()
+        motors_controller.steady()
+    
+    except KeyboardInterrupt:
+        
+        motors_controller.stop()
     
     autohover()
 
