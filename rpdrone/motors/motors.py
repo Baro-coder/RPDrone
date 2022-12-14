@@ -26,16 +26,16 @@ class MotorsController:
     
     
     def _update_freq(self):
-        self.PWM.set_frequency(self.FR, self.frequency)
-        self.PWM.set_frequency(self.FL, self.frequency)
-        self.PWM.set_frequency(self.BR, self.frequency)
-        self.PWM.set_frequency(self.BL, self.frequency)
+        self.PWM.set_PWM_frequency(self.FR, self.frequency)
+        self.PWM.set_PWM_frequency(self.FL, self.frequency)
+        self.PWM.set_PWM_frequency(self.BR, self.frequency)
+        self.PWM.set_PWM_frequency(self.BL, self.frequency)
     
     def _update_speed(self):
-        self.PWM.set_dutycycle(self.FR, self.FR_SPEED)
-        self.PWM.set_dutycycle(self.FL, self.FL_SPEED)
-        self.PWM.set_dutycycle(self.BR, self.BR_SPEED)
-        self.PWM.set_dutycycle(self.BL, self.BL_SPEED)
+        self.PWM.set_PWM_dutycycle(self.FR, self.FR_SPEED)
+        self.PWM.set_PWM_dutycycle(self.FL, self.FL_SPEED)
+        self.PWM.set_PWM_dutycycle(self.BR, self.BR_SPEED)
+        self.PWM.set_PWM_dutycycle(self.BL, self.BL_SPEED)
     
     
     def arm_esc(self):
@@ -43,24 +43,24 @@ class MotorsController:
         
         self._update_freq()
         
-        self.PWM.set_dutycycle(self.FR, 0)
-        self.PWM.set_dutycycle(self.FL, 0)
-        self.PWM.set_dutycycle(self.BR, 0)
-        self.PWM.set_dutycycle(self.BL, 0)
+        self.PWM.set_PWM_dutycycle(self.FR, 0)
+        self.PWM.set_PWM_dutycycle(self.FL, 0)
+        self.PWM.set_PWM_dutycycle(self.BR, 0)
+        self.PWM.set_PWM_dutycycle(self.BL, 0)
         time.sleep(2)
         
         inp = input('Connect battery and press ENTER')
         
-        self.PWM.set_dutycycle(self.FR, 100)
-        self.PWM.set_dutycycle(self.FL, 100)
-        self.PWM.set_dutycycle(self.BR, 100)
-        self.PWM.set_dutycycle(self.BL, 100)
+        self.PWM.set_PWM_dutycycle(self.FR, 100)
+        self.PWM.set_PWM_dutycycle(self.FL, 100)
+        self.PWM.set_PWM_dutycycle(self.BR, 100)
+        self.PWM.set_PWM_dutycycle(self.BL, 100)
         time.sleep(2)
         
-        self.PWM.set_dutycycle(self.FR, 0)
-        self.PWM.set_dutycycle(self.FL, 0)
-        self.PWM.set_dutycycle(self.BR, 0)
-        self.PWM.set_dutycycle(self.BL, 0)
+        self.PWM.set_PWM_dutycycle(self.FR, 0)
+        self.PWM.set_PWM_dutycycle(self.FL, 0)
+        self.PWM.set_PWM_dutycycle(self.BR, 0)
+        self.PWM.set_PWM_dutycycle(self.BL, 0)
         time.sleep(2)
         
         print('ESCs are ready!')
