@@ -39,28 +39,22 @@ class MotorsController:
     
     
     def arm_esc(self):
-        inp = input('Disconnect battery and press ENTER')
+        print('\tDisconnect battery and press ENTER')
+        inp = input('\t > ')
+
+        self.pi.set_servo_pulsewidth(self.FR, 0)
+        self.pi.set_servo_pulsewidth(self.FL, 0)
+        self.pi.set_servo_pulsewidth(self.BR, 0)
+        self.pi.set_servo_pulsewidth(self.BL, 0)
         
-        self._update_freq()
-        
-        self.PWM.set_PWM_dutycycle(self.FR, 0)
-        self.PWM.set_PWM_dutycycle(self.FL, 0)
-        self.PWM.set_PWM_dutycycle(self.BR, 0)
-        self.PWM.set_PWM_dutycycle(self.BL, 0)
-        time.sleep(2)
-        
-        inp = input('Connect battery and press ENTER')
-        
-        self.PWM.set_PWM_dutycycle(self.FR, 100)
-        self.PWM.set_PWM_dutycycle(self.FL, 100)
-        self.PWM.set_PWM_dutycycle(self.BR, 100)
-        self.PWM.set_PWM_dutycycle(self.BL, 100)
-        time.sleep(2)
-        
-        self.PWM.set_PWM_dutycycle(self.FR, 0)
-        self.PWM.set_PWM_dutycycle(self.FL, 0)
-        self.PWM.set_PWM_dutycycle(self.BR, 0)
-        self.PWM.set_PWM_dutycycle(self.BL, 0)
+        print('\tConnect battery and press ENTER')
+        inp = input('\t > ')
+
+        self.pi.set_servo_pulsewidth(self.FR, 1000)
+        self.pi.set_servo_pulsewidth(self.FL, 1000)
+        self.pi.set_servo_pulsewidth(self.BR, 1000)
+        self.pi.set_servo_pulsewidth(self.BL, 1000)
+
         time.sleep(2)
         
         print('ESCs are ready!')
