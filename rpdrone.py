@@ -4,11 +4,12 @@ from rpdrone.sensor.mpu import MPUSensor
 from rpdrone.motors.motors import MotorsController
 
 REFRESH_RATE = 1000
-DEGREE_TOLERANT = 4
+DEGREE_TOLERANT = 3
 
 
 def autohover():
     print('-- AUTOHOVER --')
+    counter = 0
     
     try:
         while True:
@@ -47,6 +48,10 @@ def autohover():
                 motors_controller.steady()
 
             time.sleep(1 / REFRESH_RATE)
+            
+            counter += 1
+            if counter == 600:
+                motors_controller.set_steady_speed(motors_controller.steady_speed + 10)
         
     except KeyboardInterrupt:
         print('-- STOP --')
