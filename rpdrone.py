@@ -55,8 +55,8 @@ def main():
     motors_controller = MotorsController(fr_pin=16, fl_pin=12, br_pin=21, bl_pin=20)
     
     motors_controller.set_max_motors_speed(2000)
-    motors_controller.set_min_motors_speed(1000)
-    motors_controller.set_steady_speed(1100)
+    motors_controller.set_min_motors_speed(1100)
+    motors_controller.set_steady_speed(1150)
     
     motors_controller.arm_esc()
     motors_controller.steady()

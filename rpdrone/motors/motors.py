@@ -41,10 +41,10 @@ class MotorsController:
         print ("Connect the battery and press Enter")
         inp = input() 
         
-        self.PWM.set_servo_pulsewidth(self.FR, self.max_speed)
-        self.PWM.set_servo_pulsewidth(self.FL, self.max_speed)
-        self.PWM.set_servo_pulsewidth(self.BR, self.max_speed)
-        self.PWM.set_servo_pulsewidth(self.BL, self.max_speed)
+        self.PWM.set_servo_pulsewidth(self.FR, 1000)
+        self.PWM.set_servo_pulsewidth(self.FL, 1000)
+        self.PWM.set_servo_pulsewidth(self.BR, 1000)
+        self.PWM.set_servo_pulsewidth(self.BL, 1000)
         time.sleep(2)
         
         print('ESCs are ready!')
