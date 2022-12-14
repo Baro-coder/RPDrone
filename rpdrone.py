@@ -12,7 +12,11 @@ def autohover():
     
     try:
         while True:
-            x, y = mpu_sensor.get_rot_data()
+            try:
+                x, y = mpu_sensor.get_rot_data()
+            except OSError:
+                x, y = mpu_sensor.angle_x, mpu_sensor.angle_y
+                
             fr, fl, br, bl = motors_controller.FR_SPEED, motors_controller.FL_SPEED, motors_controller.BR_SPEED, motors_controller.BL_SPEED
             print(f'X: {round(x, 5)}; Y: {round(y, 5)} | FR({fr}), FL({fl}), BR({br}), BL({bl})', end='\r')
 
@@ -58,9 +62,9 @@ def main():
     motors_controller = MotorsController(fr_pin=16, fl_pin=12, br_pin=21, bl_pin=20)
     
     motors_controller.set_max_motors_speed(1500)
-    motors_controller.set_min_motors_speed(1050)
-    motors_controller.set_steady_speed(1150)
-    motors_controller.set_acceleration(1)
+    motors_controller.set_min_motors_speed(1100)
+    motors_controller.set_steady_speed(1180)
+    motors_controller.set_acceleration(2)
     
     motors_controller.arm_esc()
     motors_controller.steady()
