@@ -3,8 +3,8 @@ import time
 from rpdrone.sensor.mpu import MPUSensor
 from rpdrone.motors.motors import MotorsController
 
-REFRESH_RATE = 100
-DEGREE_TOLERANT = 3
+REFRESH_RATE = 1000
+DEGREE_TOLERANT = 4
 
 
 def autohover():
@@ -13,7 +13,8 @@ def autohover():
     try:
         while True:
             x, y = mpu_sensor.get_rot_data()
-            print(f'X: {round(x, 5)} | Y: {round(y, 5)}', end='\r')
+            fr, fl, br, bl = motors_controller.FR_SPEED, motors_controller.FL_SPEED, motors_controller.BR_SPEED, motors_controller.BL_SPEED
+            print(f'X: {round(x, 5)}; Y: {round(y, 5)} | FR({fr}), FL({fl}), BR({br}), BL({bl})', end='\r')
 
             x_steady, y_steady = False, False
             if x < DEGREE_TOLERANT * -1:
@@ -56,9 +57,10 @@ def main():
     mpu_sensor = MPUSensor(smbus_line=1, i2c_addr=0x68)
     motors_controller = MotorsController(fr_pin=16, fl_pin=12, br_pin=21, bl_pin=20)
     
-    motors_controller.set_max_motors_speed(2000)
-    motors_controller.set_min_motors_speed(1100)
+    motors_controller.set_max_motors_speed(1500)
+    motors_controller.set_min_motors_speed(1050)
     motors_controller.set_steady_speed(1150)
+    motors_controller.set_acceleration(1)
     
     motors_controller.arm_esc()
     motors_controller.steady()

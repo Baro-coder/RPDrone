@@ -11,11 +11,11 @@ class MotorsController:
         self.BR = br_pin
         self.BL = bl_pin
         
-        self.acceleration = 10
+        self.acceleration = 3
         
         self.steady_speed = 1100
-        self.min_speed = 1000
-        self.max_speed = 2000
+        self.min_speed = 1050
+        self.max_speed = 1400
         
         self.FR_SPEED = self.steady_speed
         self.FL_SPEED = self.steady_speed
@@ -110,6 +110,9 @@ class MotorsController:
         self.BL_SPEED = min(self.BL_SPEED + self.acceleration, self.max_speed)
         self._update_speed()
         
+
+    def set_acceleration(self, acceleration : int):
+        self.acceleration = acceleration
 
     def set_steady_speed(self, steady_speed : float):
         self.steady_speed = steady_speed
