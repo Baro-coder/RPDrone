@@ -51,10 +51,25 @@ class MotorsController:
         
     
     def steady(self):
-        self.FR_SPEED = self.steady_speed
-        self.FL_SPEED = self.steady_speed
-        self.BR_SPEED = self.steady_speed
-        self.BL_SPEED = self.steady_speed
+        if self.FR_SPEED > self.steady_speed:
+            self.FR_SPEED -= self.acceleration
+        elif self.FR_SPEED < self.steady_speed:
+            self.FR_SPEED += self.acceleration
+                
+        if self.FL_SPEED > self.steady_speed:
+            self.FL_SPEED -= self.acceleration
+        elif self.FL_SPEED < self.steady_speed:
+            self.FL_SPEED += self.acceleration
+                
+        if self.BR_SPEED > self.steady_speed:
+            self.BR_SPEED -= self.acceleration
+        elif self.BR_SPEED < self.steady_speed:
+            self.BR_SPEED += self.acceleration
+                
+        if self.BL_SPEED > self.steady_speed:
+            self.BL_SPEED -= self.acceleration
+        elif self.BL_SPEED < self.steady_speed:
+            self.BL_SPEED += self.acceleration
         self._update_speed()
     
     def stop(self):
