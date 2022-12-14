@@ -63,7 +63,7 @@ class MotorsController:
         self.BL_SPEED = 0
         self._update_speed()
         
-        self.pi.stop()
+        self.PWM.stop()
         
     
     def rotate_forward(self):
