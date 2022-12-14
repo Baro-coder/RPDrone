@@ -4,6 +4,8 @@ from rpdrone.sensor.mpu import MPUSensor
 from rpdrone.motors.motors import MotorsController
 
 REFRESH_RATE = 100
+DEGREE_TOLERANT = 3
+
 
 def autohover():
     print('-- AUTOHOVER --')
@@ -13,31 +15,31 @@ def autohover():
             x, y = mpu_sensor.get_rot_data()
             print(f'X: {round(x, 5)} | Y: {round(y, 5)}', end='\r')
 
-            # x_steady, y_steady = False, False
-            # if x < 0:
-            #     # right -> need to rotate left
-            #     motors_controller.rotate_left()
+            x_steady, y_steady = False, False
+            if x < DEGREE_TOLERANT * -1:
+                # right -> need to rotate left
+                motors_controller.rotate_left()
                 
-            # elif x > 0:
-            #     # left -> need to rotate right
-            #     motors_controller.rotate_right()
+            elif x > DEGREE_TOLERANT:
+                # left -> need to rotate right
+                motors_controller.rotate_right()
 
-            # else:
-            #     x_steady = True
+            else:
+                x_steady = True
                 
-            # if y < 0:
-            #     # front -> need to rotate backward
-            #     motors_controller.rotate_backward()
+            if y < DEGREE_TOLERANT * -1:
+                # front -> need to rotate backward
+                motors_controller.rotate_backward()
             
-            # elif y > 0:
-            #     # back -> need to rotate forward
-            #     motors_controller.rotate_forward()
+            elif y > DEGREE_TOLERANT:
+                # back -> need to rotate forward
+                motors_controller.rotate_forward()
                 
-            # else:
-            #     y_steady = True
+            else:
+                y_steady = True
                 
-            # if x_steady and y_steady:
-            #     motors_controller.steady()
+            if x_steady and y_steady:
+                motors_controller.steady()
 
             time.sleep(1 / REFRESH_RATE)
         
