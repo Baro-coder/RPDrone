@@ -55,11 +55,12 @@ class MPUSensor:
         
         input(f'{self.__class__}:   Put vehicle on the stable ground and press ENTER')
         
-        print(f'{self.__class__}:  Getting data...')
+        print(f'{self.__class__}:   Getting data...')
         x_data = []
         y_data = []
         
-        for _ in range(10000):
+        for i in range(10000):
+            print(f'{self.__class__}:   {(i / 10000) * 100}%', end='\r')
             try:
                 x, y = self.get_rot_data()
             except OSError:
@@ -67,13 +68,14 @@ class MPUSensor:
                 x, y = self.angle_x, self.angle_y
             x_data.append(x)
             y_data.append(y)
-            
-        print(f'{self.__class__}:  Computing mean error...')
+        print(f'{self.__class__}:   100%', end='\r')
+        
+        print(f'{self.__class__}:   Computing mean error...')
         
         self.dx = mean(x_data)
         self.dy = mean(y_data)
         
-        print(f'{self.__class__}:  dx = {self.dx} | dy = {self.dy}')
+        print(f'{self.__class__}:   dx = {self.dx} | dy = {self.dy}')
         
         print(f'{self.__class__}: Calibrating finished.')
     
