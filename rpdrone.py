@@ -6,7 +6,7 @@ from rpdrone.motors.motors import MotorsController
 # --------------------------------------------
 MIN_WIDTH = 1000
 MAX_WIDTH = 2000
-ACCELERATION = 5
+ACCELERATION = 2
 
 REFRESH_RATE = 100
 DEGREE_TOLERANT = 5
@@ -133,6 +133,9 @@ def main():
     try:
         input('\nPress ENTER to run throttle-test')
         test_throttle()
+
+        input('\nPress ENTER to run gyro_test')
+        test_gyro()
 
         input('\nPress ENTER to run autohover')
         autohover()
