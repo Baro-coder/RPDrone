@@ -41,7 +41,7 @@ class MotorsController:
             self.esc_widths[pin_id] = width
             
         else:
-            for i in range(self.esc_widths):
+            for i in range(len(self.esc_widths)):
                 self.esc_widths[i] = width
     
     
