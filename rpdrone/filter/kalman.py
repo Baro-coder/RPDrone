@@ -25,7 +25,7 @@ class Filter:
         # Step 4: Innovation covariance
         s = self.P[0][0] + self.RMeasure
 
-        # Step 5:    Kalman Gain
+        # Step 5: Kalman Gain
         K=[0.0,0.0]
         K[0] = self.P[0][0]/s
         K[1] = self.P[1][0]/s

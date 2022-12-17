@@ -78,7 +78,6 @@ def autohover():
         
         time.sleep(1 / REFRESH_RATE)
 
-
 # --------------------------------------------
 
 def init():

@@ -45,6 +45,7 @@ class MPUSensor:
         self.angle_y = 0
     
     
+    # Compute, filter and get Rotation data
     def get_rot_data(self) -> tuple:
         gyro_data = self.get_gyro_data()
         
@@ -59,6 +60,7 @@ class MPUSensor:
         
         return (filtered_rot_x, filtered_rot_y)
     
+    # Get Accelerometer data from MPU
     def get_accel_data(self) -> tuple:
         accel_xout = self._read_word_2c(MPUSensor.ACCEL_XOUT_ADDR)
         accel_yout = self._read_word_2c(MPUSensor.ACCEL_YOUT_ADDR)
@@ -69,6 +71,7 @@ class MPUSensor:
         
         return (accel_xout_scaled, accel_yout_scaled, accel_zout_scaled)
     
+    # Get Gyroscope data from MPU
     def get_gyro_data(self) -> tuple:
         gyro_xout = self._read_word_2c(MPUSensor.GYRO_XOUT_ADDR)
         gyro_yout = self._read_word_2c(MPUSensor.GYRO_YOUT_ADDR)
@@ -99,14 +102,16 @@ class MPUSensor:
         else:
             return val
 
+    # Distance between `a` and `b`
     def _dist(self, a, b):
         return math.sqrt((a*a)+(b*b))
 
-
+    # Compute Y Rotation
     def _get_y_rotation(self, x, y, z):
         radians = math.atan2(x, self._dist(y,z))
         return -math.degrees(radians)
 
+    # Compute X Rotation
     def _get_x_rotation(self, x, y, z):
         radians = math.atan2(y, self._dist(x,z))
         return math.degrees(radians)

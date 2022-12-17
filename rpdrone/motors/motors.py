@@ -21,7 +21,7 @@ class MotorsController:
         self.min_width = min_width
         self.max_width = max_width
     
-    
+    # Send `self.esc_width` PWM to `self.esc_pins`
     def _pwm(self, pin_id : int = -1,  snooze : int = 0):
         if pin_id != -1:
             self.conn.set_servo_pulsewidth(self.esc_pins[pin_id], self.esc_widths[pin_id])
@@ -35,7 +35,17 @@ class MotorsController:
             if snooze:
                 time.sleep(snooze)
     
-
+    # Update `self.esc_width` PWM
+    def set_width(self, width : int, pin_id : int = -1):
+        if pin_id != -1:
+            self.esc_widths[pin_id] = width
+            
+        else:
+            for i in range(self.esc_widths):
+                self.esc_widths[i] = width
+    
+    
+    # Calibrate ESC to `self.min_width` : `self.max_width`
     def calibrate(self):
         print(f'{self.__class__}: Calibrating... ')
         
@@ -52,7 +62,8 @@ class MotorsController:
         self._pwm(snooze=5)
     
         print(f'{self.__class__}: Calibration finished.')
-        
+    
+    # Arm ESC
     def arm(self):
         print(f'{self.__class__}: Arming... ')
 
@@ -61,7 +72,7 @@ class MotorsController:
 
         print(f'{self.__class__}: Arming finished.')
     
-    
+    # Slow down Motors to min throttle and turn of ESC
     def stop(self):
         print(f'{self.__class__}: Slowing... ')
         self.set_width(self.min_width)
@@ -74,15 +85,8 @@ class MotorsController:
         self.conn.stop()
     
     
-    def set_width(self, width : int, pin_id : int = -1):
-        if pin_id != -1:
-            self.esc_widths[pin_id] = width
-            
-        else:
-            for i in range(self.esc_widths):
-                self.esc_widths[i] = width
-    
-    
+    # *** THROTTLE ***
+    #   Increase
     def increase_throttle(self, step : int = 0):
         if step:
             for i, width in enumerate(self.esc_widths):
@@ -92,7 +96,8 @@ class MotorsController:
                 self.set_width(min(width + self.acceleration, self.max_width), pin_id=i)
             
         self._pwm()
-        
+    
+    # Decrease
     def decrease_throttle(self, step : int = 0):
         if step:
             for i, width in enumerate(self.esc_widths):
@@ -104,6 +109,8 @@ class MotorsController:
         self._pwm()
     
     
+    # *** ROTATING ***
+    #   Speed up back motors | Slow down front motors
     def rotate_forward(self):
         # FR
         self.set_width(max(self.esc_widths[0] - self.acceleration, self.min_width), pin_id=0)
@@ -115,7 +122,8 @@ class MotorsController:
         self.set_width(min(self.esc_widths[3] + self.acceleration, self.max_width), pin_id=3)
         
         self._pwm()
-        
+    
+    #   Speed up front motors | Slow down back motors
     def rotate_backward(self):
         # FR
         self.set_width(min(self.esc_widths[0] + self.acceleration, self.max_width), pin_id=0)
@@ -127,7 +135,8 @@ class MotorsController:
         self.set_width(max(self.esc_widths[3] - self.acceleration, self.min_width), pin_id=3)
         
         self._pwm()
-        
+    
+    #   Speed up right motors | Slow down left motors
     def rotate_left(self):
         # FR
         self.set_width(min(self.esc_widths[0] + self.acceleration, self.max_width), pin_id=0)
@@ -140,6 +149,7 @@ class MotorsController:
         
         self._pwm()
         
+    #   Speed up left motors | Slow down right motors
     def rotate_right(self):
         # FR
         self.set_width(max(self.esc_widths[0] + self.acceleration, self.min_width), pin_id=0)
