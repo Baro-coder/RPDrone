@@ -13,6 +13,24 @@ DEGREE_TOLERANT = 5
 
 # --------------------------------------------
 
+def test_gyro():
+    print('-- Gyroscope Test : START --')
+    
+    for _ in range(1000):
+        try:
+            x, y = mpu_sensor.get_rot_data()
+        except OSError:
+            print('MPU.get_rotation - OSError')
+            x, y = mpu_sensor.angle_x, mpu_sensor.angle_y
+            
+        x, y = round(x, 2), round(y, 2)
+        
+        print(f'(X: {x}; Y: {y})', end='\r')
+        
+        time.sleep(1 / REFRESH_RATE)
+    
+    print('-- Gyroscope Test : DONE --')
+
 def test_throttle():
     print('-- Throttle Test : START --')
     
@@ -36,7 +54,7 @@ def test_throttle():
     time.sleep(5)
     
     print('Decreasing...')
-    for width in range(max_width, min_width, step):
+    for width in range(max_width, min_width, step * -1):
         vehicle.decrease_throttle(step)
         print(f'    Throttle: {width}', end='\r')
         time.sleep(snooze)
@@ -47,6 +65,10 @@ def test_throttle():
 
 def autohover():
     print('-- AUTOHOVER --')
+    
+    vehicle.min_width = 1100
+    vehicle.max_width = 1250
+    
     while True:
         try:
             x, y = mpu_sensor.get_rot_data()
@@ -54,7 +76,7 @@ def autohover():
             print('MPU.get_rotation - OSError')
             x, y = mpu_sensor.angle_x, mpu_sensor.angle_y
             
-        x, y = round(x, 2), round(x, 2)
+        x, y = round(x, 2), round(y, 2)
         fr, fl, br, bl = vehicle.esc_widths
 
         
