@@ -4,6 +4,8 @@ import smbus
 
 from rpdrone.filter import kalman
 
+FIX_Y = 3
+
 
 class MPUSensor:
     # Sensor's activate register

@@ -3,146 +3,151 @@ import pigpio
 
 
 class MotorsController:
-    def __init__(self, fr_pin : int, fl_pin : int, br_pin : int, bl_pin : int):
-        self.PWM = pigpio.pi()
+    def __init__(self, fr_pin : int, fl_pin : int, br_pin : int, bl_pin : int, min_width : int = 1000, max_width : int = 2000, acceleration : int = 5):
+        # GPIO connection handler
+        self.conn = pigpio.pi()
         
-        self.FR = fr_pin
-        self.FL = fl_pin
-        self.BR = br_pin
-        self.BL = bl_pin
+        # ESC pins
+        self.esc_pins = [fr_pin, fl_pin, br_pin, bl_pin]
         
-        self.acceleration = 3
+        # ESC PWM widths
+        # FR FL BR BL
+        self.esc_widths = [0, 0, 0, 0]
         
-        self.steady_speed = 1100
-        self.min_speed = 1050
-        self.max_speed = 1200
+        # Single width change value
+        self.acceleration = acceleration
         
-        self.FR_SPEED = self.steady_speed
-        self.FL_SPEED = self.steady_speed
-        self.BR_SPEED = self.steady_speed
-        self.BL_SPEED = self.steady_speed
-        
+        # Max and Min PWM width
+        self.min_width = min_width
+        self.max_width = max_width
     
-    def _update_speed(self):
-        self.PWM.set_servo_pulsewidth(self.FR, self.FR_SPEED)
-        self.PWM.set_servo_pulsewidth(self.FL, self.FL_SPEED)
-        self.PWM.set_servo_pulsewidth(self.BR, self.BR_SPEED)
-        self.PWM.set_servo_pulsewidth(self.BL, self.BL_SPEED)
-        
-    def arm_esc(self):
-        print ("Disconnect the battery and press Enter")
-        inp = input()  
-          
-        self.PWM.set_servo_pulsewidth(self.FR, 0)
-        self.PWM.set_servo_pulsewidth(self.FL, 0)
-        self.PWM.set_servo_pulsewidth(self.BR, 0)
-        self.PWM.set_servo_pulsewidth(self.BL, 0)
-        
-        print ("Connect the battery and press Enter")
-        inp = input() 
-        
-        self.PWM.set_servo_pulsewidth(self.FR, 1000)
-        self.PWM.set_servo_pulsewidth(self.FL, 1000)
-        self.PWM.set_servo_pulsewidth(self.BR, 1000)
-        self.PWM.set_servo_pulsewidth(self.BL, 1000)
-        time.sleep(2)
-        
-        print('ESCs are ready!')
     
-    def check_engines(self):
-        print('FR', end=': ')
-        self.FR_SPEED = self.steady_speed
-        self.PWM.set_servo_pulsewidth(self.FR, self.FR_SPEED)
-        time.sleep(3)
-        print('OK')
-        
-        print('FL', end=': ')
-        self.FL_SPEED = self.steady_speed
-        self.PWM.set_servo_pulsewidth(self.FL, self.FR_SPEED)
-        time.sleep(3)
-        print('OK')
-        
-        print('BR', end=': ')
-        self.BR_SPEED = self.steady_speed
-        self.PWM.set_servo_pulsewidth(self.BR, self.FR_SPEED)
-        time.sleep(3)
-        print('OK')
-        
-        print('BL', end=': ')
-        self.BL_SPEED = self.steady_speed
-        self.PWM.set_servo_pulsewidth(self.BL, self.FR_SPEED)
-        time.sleep(3)
-        print('OK')
+    def _pwm(self, pin_id : int = -1,  snooze : int = 0):
+        if pin_id != -1:
+            self.conn.set_servo_pulsewidth(self.esc_pins[pin_id], self.esc_widths[pin_id])
+            if snooze:
+                time.sleep(snooze)
+                
+        else:
+            for esc, width in zip(self.esc_pins, self.esc_widths):
+                self.conn.set_servo_pulsewidth(esc, width)
+                
+            if snooze:
+                time.sleep(snooze)
     
-    def steady(self):
-        if self.FR_SPEED > self.steady_speed:
-            self.FR_SPEED -= self.acceleration
-        elif self.FR_SPEED < self.steady_speed:
-            self.FR_SPEED += self.acceleration
-                
-        if self.FL_SPEED > self.steady_speed:
-            self.FL_SPEED -= self.acceleration
-        elif self.FL_SPEED < self.steady_speed:
-            self.FL_SPEED += self.acceleration
-                
-        if self.BR_SPEED > self.steady_speed:
-            self.BR_SPEED -= self.acceleration
-        elif self.BR_SPEED < self.steady_speed:
-            self.BR_SPEED += self.acceleration
-                
-        if self.BL_SPEED > self.steady_speed:
-            self.BL_SPEED -= self.acceleration
-        elif self.BL_SPEED < self.steady_speed:
-            self.BL_SPEED += self.acceleration
-        self._update_speed()
+
+    def calibrate(self):
+        print(f'{self.__class__}: Calibrating... ')
+        
+        self.set_width(self.max_width)
+        self._pwm()
+        input(f'{self.__class__}:   Connect battery and press ENTER')
+    
+        print(f'{self.__class__}:   PWM: max width = {self.max_width}')
+        self.set_width(self.max_width)
+        self._pwm(snooze=2)
+    
+        print(f'{self.__class__}:   PWM: min width = {self.min_width}')
+        self.set_width(self.min_width)
+        self._pwm(snooze=5)
+    
+        print(f'{self.__class__}: Calibration finished.')
+        
+    def arm(self):
+        print(f'{self.__class__}: Arming... ')
+
+        self.set_width(self.min_width)
+        self._pwm(snooze=2)
+
+        print(f'{self.__class__}: Arming finished.')
+    
     
     def stop(self):
-        self.FR_SPEED = 0
-        self.FL_SPEED = 0
-        self.BR_SPEED = 0
-        self.BL_SPEED = 0
-        self._update_speed()
+        print(f'{self.__class__}: Slowing... ')
+        self.set_width(self.min_width)
+        self._pwm(snooze=2)
         
-        self.PWM.stop()
+        print(f'{self.__class__}: Failsafe... ')
+        self.set_width(0)
+        self._pwm(snooze=1)
         
+        self.conn.stop()
+    
+    
+    def set_width(self, width : int, pin_id : int = -1):
+        if pin_id != -1:
+            self.esc_widths[pin_id] = width
+            
+        else:
+            for i in range(self.esc_widths):
+                self.esc_widths[i] = width
+    
+    
+    def increase_throttle(self, step : int = 0):
+        if step:
+            for i, width in enumerate(self.esc_widths):
+                self.set_width(min(width + step, self.max_width), pin_id=i)
+        else:
+            for i, width in enumerate(self.esc_widths):
+                self.set_width(min(width + self.acceleration, self.max_width), pin_id=i)
+            
+        self._pwm()
+        
+    def decrease_throttle(self, step : int = 0):
+        if step:
+            for i, width in enumerate(self.esc_widths):
+                self.set_width(max(width - step, self.min_width), pin_id=i)
+        else:
+            for i, width in enumerate(self.esc_widths):
+                self.set_width(max(width - self.acceleration, self.min_width), pin_id=i)
+            
+        self._pwm()
+    
     
     def rotate_forward(self):
-        self.FR_SPEED = max(self.FR_SPEED - self.acceleration, self.min_speed)
-        self.FL_SPEED = max(self.FL_SPEED - self.acceleration, self.min_speed)
-        self.BR_SPEED = min(self.BR_SPEED + self.acceleration, self.max_speed)
-        self.BL_SPEED = min(self.BL_SPEED + self.acceleration, self.max_speed)
-        self._update_speed()
+        # FR
+        self.set_width(max(self.esc_widths[0] - self.acceleration, self.min_width), pin_id=0)
+        # FL
+        self.set_width(max(self.esc_widths[1] - self.acceleration, self.min_width), pin_id=1)
+        # BR
+        self.set_width(min(self.esc_widths[2] + self.acceleration, self.max_width), pin_id=2)
+        # BL
+        self.set_width(min(self.esc_widths[3] + self.acceleration, self.max_width), pin_id=3)
+        
+        self._pwm()
         
     def rotate_backward(self):
-        self.FR_SPEED = min(self.FR_SPEED + self.acceleration, self.max_speed)
-        self.FL_SPEED = min(self.FL_SPEED + self.acceleration, self.max_speed)
-        self.BR_SPEED = max(self.BR_SPEED - self.acceleration, self.min_speed)
-        self.BL_SPEED = max(self.BL_SPEED - self.acceleration, self.min_speed)
-        self._update_speed()
+        # FR
+        self.set_width(min(self.esc_widths[0] + self.acceleration, self.max_width), pin_id=0)
+        # FL
+        self.set_width(min(self.esc_widths[1] + self.acceleration, self.max_width), pin_id=1)
+        # BR
+        self.set_width(max(self.esc_widths[2] - self.acceleration, self.min_width), pin_id=2)
+        # BL
+        self.set_width(max(self.esc_widths[3] - self.acceleration, self.min_width), pin_id=3)
+        
+        self._pwm()
         
     def rotate_left(self):
-        self.FR_SPEED = min(self.FR_SPEED + self.acceleration, self.max_speed)
-        self.FL_SPEED = max(self.FL_SPEED - self.acceleration, self.min_speed)
-        self.BR_SPEED = min(self.BR_SPEED + self.acceleration, self.max_speed)
-        self.BL_SPEED = max(self.BL_SPEED - self.acceleration, self.min_speed)
-        self._update_speed()
+        # FR
+        self.set_width(min(self.esc_widths[0] + self.acceleration, self.max_width), pin_id=0)
+        # FL
+        self.set_width(max(self.esc_widths[1] - self.acceleration, self.min_width), pin_id=1)
+        # BR
+        self.set_width(min(self.esc_widths[2] + self.acceleration, self.max_width), pin_id=2)
+        # BL
+        self.set_width(max(self.esc_widths[3] - self.acceleration, self.min_width), pin_id=3)
+        
+        self._pwm()
         
     def rotate_right(self):
-        self.FR_SPEED = max(self.FR_SPEED - self.acceleration, self.min_speed)
-        self.FL_SPEED = min(self.FL_SPEED + self.acceleration, self.max_speed)
-        self.BR_SPEED = max(self.BR_SPEED - self.acceleration, self.min_speed)
-        self.BL_SPEED = min(self.BL_SPEED + self.acceleration, self.max_speed)
-        self._update_speed()
+        # FR
+        self.set_width(max(self.esc_widths[0] + self.acceleration, self.min_width), pin_id=0)
+        # FL
+        self.set_width(min(self.esc_widths[1] - self.acceleration, self.max_width), pin_id=1)
+        # BR
+        self.set_width(max(self.esc_widths[2] + self.acceleration, self.min_width), pin_id=2)
+        # BL
+        self.set_width(min(self.esc_widths[3] - self.acceleration, self.max_width), pin_id=3)
         
-
-    def set_acceleration(self, acceleration : int):
-        self.acceleration = acceleration
-
-    def set_steady_speed(self, steady_speed : float):
-        self.steady_speed = steady_speed
-
-    def set_min_motors_speed(self, min_speed : float):
-        self.min_speed = min_speed
-        
-    def set_max_motors_speed(self, max_speed : float):
-        self.max_spped = max_speed
+        self._pwm()

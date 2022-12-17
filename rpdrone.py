@@ -3,93 +3,133 @@ import time
 from rpdrone.sensor.mpu import MPUSensor
 from rpdrone.motors.motors import MotorsController
 
-REFRESH_RATE = 100
-DEGREE_TOLERANT = 6
+# --------------------------------------------
+MIN_WIDTH = 1000
+MAX_WIDTH = 2000
+ACCELERATION = 5
 
+REFRESH_RATE = 100
+DEGREE_TOLERANT = 5
+
+# --------------------------------------------
+
+def test_throttle():
+    print('-- Throttle Test : START --')
+    
+    min_width = 1050
+    max_width = 1200
+    step = 5
+    snooze = 0.5
+    
+    vehicle.set_width(min_width)
+    vehicle._pwm()
+    
+    time.sleep(2)
+    
+    print('Increasing...')
+    for width in range(min_width, max_width, step):
+        vehicle.increase_throttle(step)
+        print(f'    Throttle: {width}', end='\r')
+        time.sleep(snooze)
+        
+    print('Holding at max...')
+    time.sleep(5)
+    
+    print('Decreasing...')
+    for width in range(max_width, min_width, step):
+        vehicle.decrease_throttle(step)
+        print(f'    Throttle: {width}', end='\r')
+        time.sleep(snooze)
+    
+    print('-- Throttle Test : DONE --')
+
+# --------------------------------------------
 
 def autohover():
     print('-- AUTOHOVER --')
-    counter = 0
-    
-    try:
-        while True:
-            try:
-                x, y = mpu_sensor.get_rot_data()
-            except OSError:
-                x, y = mpu_sensor.angle_x, mpu_sensor.angle_y
-                
-            fr, fl, br, bl = motors_controller.FR_SPEED, motors_controller.FL_SPEED, motors_controller.BR_SPEED, motors_controller.BL_SPEED
-            print(f'X: {round(x, 5)}; Y: {round(y, 5)} | FR({fr}), FL({fl}), BR({br}), BL({bl})', end='\r')
-
-            x_steady, y_steady = False, False
-            if x < DEGREE_TOLERANT * -1:
-                # right -> need to rotate left
-                motors_controller.rotate_left()
-                
-            elif x > DEGREE_TOLERANT:
-                # left -> need to rotate right
-                motors_controller.rotate_right()
-
-            else:
-                x_steady = True
-                
-            if y < DEGREE_TOLERANT * -1:
-                # front -> need to rotate backward
-                motors_controller.rotate_backward()
+    while True:
+        try:
+            x, y = mpu_sensor.get_rot_data()
+        except OSError:
+            print('MPU.get_rotation - OSError')
+            x, y = mpu_sensor.angle_x, mpu_sensor.angle_y
             
-            elif y > DEGREE_TOLERANT:
-                # back -> need to rotate forward
-                motors_controller.rotate_forward()
-                
-            else:
-                y_steady = True
-                
-            if x_steady and y_steady:
-                motors_controller.steady()
+        x, y = round(x, 2), round(x, 2)
+        fr, fl, br, bl = vehicle.esc_widths
 
-            time.sleep(1 / REFRESH_RATE)
-            
-            # counter += 1
-            # if counter == 1000:
-            #     motors_controller.set_steady_speed(motors_controller.steady_speed + 10)
         
-    except KeyboardInterrupt:
-        print('-- STOP --')
-        motors_controller.stop()
-    
+        print(f'(X: {x}; Y: {y}) - (FR : {fr}; FL : {fl}; BR : {br}; BL : {bl})', end='\r')
+        
+        if x < DEGREE_TOLERANT * -1:
+            # right -> need to rotate left
+            vehicle.rotate_left()
+            
+        elif x > DEGREE_TOLERANT:
+            # left -> need to rotate right
+            vehicle.rotate_right()
+            
+        if y < DEGREE_TOLERANT * -1:
+            # front -> need to rotate backward
+            vehicle.rotate_backward()
+        
+        elif y > DEGREE_TOLERANT:
+            # back -> need to rotate forward
+            vehicle.rotate_forward()
+        
+        time.sleep(1 / REFRESH_RATE)
 
-def main():
-    global mpu_sensor, motors_controller
+
+# --------------------------------------------
+
+def init():
+    global mpu_sensor, vehicle
     
-    print('-- INIT --')
+    print('Initializing...')
     
     mpu_sensor = MPUSensor(smbus_line=1, i2c_addr=0x68)
-    motors_controller = MotorsController(fr_pin=20, fl_pin=7, br_pin=21, bl_pin=12)
-    
-    motors_controller.set_max_motors_speed(1200)
-    motors_controller.set_min_motors_speed(1100)
-    motors_controller.set_steady_speed(1120)
-    motors_controller.set_acceleration(0.5)
-    
-    motors_controller.arm_esc()
-    
+    vehicle = MotorsController(fr_pin=20, fl_pin=7, br_pin=21, bl_pin=12, min_width=MIN_WIDTH, max_width=MAX_WIDTH, acceleration=ACCELERATION)
+
+    print('Components ready.')
+
+
+def start_prep():
+    print('Do you want to calibrate ESCs? (y : n)')
+    while True:
+        opt = input(' > ')
+        if opt == 'y' or opt == 'Y':
+            vehicle.calibrate()
+            break    
+        elif opt == 'n' or opt == 'N':
+            input('     Connect battery and press ENTER')
+            break
+        else:
+            print('Type `y`, `Y`, `n` or `N`')
+
+    vehicle.arm()
+
+
+def main():
     try:
-        print('Checking engines...')
-        motors_controller.check_engines()
-        print('Done\n')
-    
-        print('Press ENTER to start')
-        inp = input()
-    
-        motors_controller.steady()
+        input('\nPress ENTER to run throttle-test')
+        test_throttle()
+
+        input('\nPress ENTER to run autohover')
+        autohover()
     
     except KeyboardInterrupt:
-        
-        motors_controller.stop()
+        print('-- Manually interrupted --')
     
-    autohover()
+    except Exception as e:
+        print('-- Unexpected Exception --')
+        vehicle.stop()
+        raise
+    
+    finally:
+        vehicle.stop()
+        sys.exit(0)
 
-    sys.exit(0)
 
 if __name__ == '__main__':
+    init()
+    start_prep()
     main()
