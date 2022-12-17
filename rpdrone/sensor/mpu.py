@@ -60,7 +60,7 @@ class MPUSensor:
         y_data = []
         
         for i in range(10000):
-            print(f'{self.__class__}:   {(i / 10000) * 100}%', end='\r')
+            print(f'{self.__class__}:   {round((i / 10000) * 100), 2}%', end='\r')
             try:
                 x, y = self.get_rot_data()
             except OSError:
@@ -68,7 +68,7 @@ class MPUSensor:
                 x, y = self.angle_x, self.angle_y
             x_data.append(x)
             y_data.append(y)
-        print(f'{self.__class__}:   100%', end='\r')
+        print(f'{self.__class__}:   100%')
         
         print(f'{self.__class__}:   Computing mean error...')
         
@@ -87,13 +87,13 @@ class MPUSensor:
         rot_x = self._get_x_rotation(gyro_data[0], gyro_data[1], gyro_data[2])
         rot_y = self._get_y_rotation(gyro_data[0], gyro_data[1], gyro_data[2])
         
-        filtered_rot_x = self.kalman_rot_x.getAngle(self.angle_x, rot_x, self.dt) - self.dx
-        filtered_rot_y = self.kalman_rot_y.getAngle(self.angle_y, rot_y, self.dt) - self.dy
+        # filtered_rot_x = self.kalman_rot_x.getAngle(self.angle_x, rot_x, self.dt) - self.dx
+        # filtered_rot_y = self.kalman_rot_y.getAngle(self.angle_y, rot_y, self.dt) - self.dy
         
-        self.angle_x = filtered_rot_x
-        self.angle_y = filtered_rot_y
+        self.angle_x = rot_x
+        self.angle_y = rot_y
         
-        return (filtered_rot_x, filtered_rot_y)
+        return (rot_x, rot_y)
     
     # Get Accelerometer data from MPU
     def get_accel_data(self) -> tuple:
