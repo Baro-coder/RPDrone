@@ -1,5 +1,6 @@
 import time
 import math
+from statistics import mean
 import smbus
 
 from rpdrone.filter import kalman
@@ -43,6 +44,38 @@ class MPUSensor:
         # Angles init
         self.angle_x = 0
         self.angle_y = 0
+        
+        # Error vars
+        self.dx = 0
+        self.dy = 0
+    
+    
+    def calibrate(self):
+        print(f'{self.__class__}: Calibrating... ')
+        
+        input(f'{self.__class__}:   Put vehicle on the stable ground and press ENTER')
+        
+        print(f'{self.__class__}:  Getting data...')
+        x_data = []
+        y_data = []
+        
+        for _ in range(10000):
+            try:
+                x, y = self.get_rot_data()
+            except OSError:
+                print('*', end='')
+                x, y = self.angle_x, self.angle_y
+            x_data.append(x)
+            y_data.append(y)
+            
+        print(f'{self.__class__}:  Computing mean error...')
+        
+        self.dx = mean(x_data)
+        self.dy = mean(y_data)
+        
+        print(f'{self.__class__}:  dx = {self.dx} | dy = {self.dy}')
+        
+        print(f'{self.__class__}: Calibrating finished.')
     
     
     # Compute, filter and get Rotation data
@@ -52,8 +85,8 @@ class MPUSensor:
         rot_x = self._get_x_rotation(gyro_data[0], gyro_data[1], gyro_data[2])
         rot_y = self._get_y_rotation(gyro_data[0], gyro_data[1], gyro_data[2])
         
-        filtered_rot_x = self.kalman_rot_x.getAngle(self.angle_x, rot_x, self.dt)
-        filtered_rot_y = self.kalman_rot_y.getAngle(self.angle_y, rot_y, self.dt)
+        filtered_rot_x = self.kalman_rot_x.getAngle(self.angle_x, rot_x, self.dt) - self.dx
+        filtered_rot_y = self.kalman_rot_y.getAngle(self.angle_y, rot_y, self.dt) - self.dy
         
         self.angle_x = filtered_rot_x
         self.angle_y = filtered_rot_y

@@ -16,13 +16,15 @@ DEGREE_TOLERANT = 5
 def test_gyro():
     print('-- Gyroscope Test : START --')
     
+    x_mean, y_mean = 0, 0
+    
     for _ in range(1000):
         try:
             x, y = mpu_sensor.get_rot_data()
         except OSError:
             print('MPU.get_rotation - OSError')
             x, y = mpu_sensor.angle_x, mpu_sensor.angle_y
-            
+        
         x, y = round(x, 2), round(y, 2)
         
         print(f'(X: {x}; Y: {y})', end='\r')
@@ -114,6 +116,8 @@ def init():
 
 
 def start_prep():
+    mpu_sensor.calibrate()
+    
     print('Do you want to calibrate ESCs? (y : n)')
     while True:
         opt = input(' > ')
