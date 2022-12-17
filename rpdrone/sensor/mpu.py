@@ -60,7 +60,7 @@ class MPUSensor:
         y_data = []
         
         for i in range(10000):
-            print(f'{self.__class__}:   {round((i / 10000) * 100), 2}%', end='\r')
+            print(f'{self.__class__}:   {round((i / 10000) * 100, 2)}%', end='\r')
             try:
                 x, y = self.get_rot_data()
             except OSError:
